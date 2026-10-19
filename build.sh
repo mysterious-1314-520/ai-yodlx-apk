@@ -1,20 +1,37 @@
 #!/bin/bash
 # Build AiyodlxApk - liquid-glass WebView wrapper for ai.yodlx.com
+#
+# 依赖: JDK 17 + Android SDK 34 (platforms/android-34 + build-tools/34.0.0)
+# 用法: ./build.sh
+# 环境变量覆盖: JAVA_HOME / ANDROID_HOME / SDK_VERSION / BUILD_TOOLS_VERSION
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$ROOT"
 
-JAVA_CAND="/opt/jdk-17.0.20.1+1"
-if [ -x "$JAVA_CAND/bin/java" ]; then export JAVA_HOME="$JAVA_CAND"
-else export JAVA_HOME="$(dirname $(dirname $(readlink -f $(which java))))"
+# ── 工具链探测 ──────────────────────────────────────────────
+export ANDROID_HOME="${ANDROID_HOME:-/opt/android-sdk}"
+export SDK_VERSION="${SDK_VERSION:-34}"
+export BUILD_TOOLS_VERSION="${BUILD_TOOLS_VERSION:-34.0.0}"
+
+# JDK: 优先环境变量 → 常见路径 → which
+if [ -n "${JAVA_HOME:-}" ] && [ -x "$JAVA_HOME/bin/java" ]; then :; fi
+if [ -z "${JAVA_HOME:-}" ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
+  for cand in /opt/jdk-17* /usr/lib/jvm/java-17* /usr/lib/jvm/openjdk-17*; do
+    if [ -x "$cand/bin/java" ]; then export JAVA_HOME="$cand"; break; fi
+  done
 fi
-export PATH="$JAVA_HOME/bin:$PATH"
-export ANDROID_HOME="/opt/android-sdk"
-export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+if [ -z "${JAVA_HOME:-}" ] && command -v java >/dev/null 2>&1; then
+  export JAVA_HOME="$(dirname "$(dirname "$(readlink -f "$(which java)")")")"
+fi
+if [ ! -x "$JAVA_HOME/bin/java" ]; then
+  echo "ERROR: JDK 17 not found. Set JAVA_HOME or install openjdk-17." >&2
+  exit 1
+fi
+export PATH="$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
 
 SDK="$ANDROID_HOME"
-PLATFORM="$SDK/platforms/android-34"
-BT="$SDK/build-tools/34.0.0"
+PLATFORM="$SDK/platforms/android-$SDK_VERSION"
+BT="$SDK/build-tools/$BUILD_TOOLS_VERSION"
 AAPT="$BT/aapt"
 D8="$BT/d8"
 ZIPALIGN="$BT/zipalign"
@@ -22,15 +39,29 @@ JAVAC="$JAVA_HOME/bin/javac"
 JARSIGNER="$JAVA_HOME/bin/jarsigner"
 APKSIGNER="$BT/apksigner"
 
+# 工具链完整性检查
+for tool in "$AAPT" "$D8" "$ZIPALIGN" "$APKSIGNER" "$PLATFORM/android.jar"; do
+  if [ ! -x "$tool" ] && [ ! -f "$tool" ]; then
+    echo "ERROR: missing toolchain component: $tool" >&2
+    echo "  Run: sdkmanager --sdk_root=$SDK 'platforms;android-$SDK_VERSION' 'build-tools;$BUILD_TOOLS_VERSION'" >&2
+    exit 1
+  fi
+done
+
 APP_ID="com.yodlx.apk"
+MIN_SDK=21
+TARGET_SDK="$SDK_VERSION"
+VERCODE=1
+VERNAME="1.0.0"
 SRC="$ROOT/src/main"
 TMP="$ROOT/build"
 KEYSTORE="$ROOT/keystore.jks"
 
 rm -rf "$TMP"; mkdir -p "$TMP"
 
-# ---- keystore (debug-style, kept in repo for reproducible builds) ----
+# ── 签名密钥（debug 风格，缺失自动生成） ──────────────────
 if [ ! -f "$KEYSTORE" ]; then
+  echo "-- generating keystore ..."
   keytool -genkey -v -keystore "$KEYSTORE" -alias androiddebugkey \
     -keyalg RSA -keysize 2048 -validity 10000 \
     -dname "CN=Android Debug,O=Android,C=US" -storepass android -keypass android -noprompt
@@ -54,7 +85,6 @@ echo "=== [3/6] d8 -> classes.dex ==="
 mkdir -p "$TMP/dexin"
 find "$TMP/classes" -name "*.class" -exec cp {} "$TMP/dexin/" \;
 "$D8" --output "$TMP" --lib "$PLATFORM/android.jar" "$TMP/dexin"/*.class
-# D8 writes classes.dex + possibly classes2.dex directly into --output
 ls "$TMP"/*.dex
 
 echo "=== [4/6] aapt: package APK (no dex) -> unsigned.apk ==="
@@ -77,5 +107,5 @@ echo "=== [6/6] zipalign + apksigner ==="
   --ks-key-alias androiddebugkey --key-pass pass:android \
   --out "$TMP/AiyodlxApk.apk" "$TMP/aligned.apk"
 
-ls -la "$TMP/AiyodlxApk.apk"
+ls -lh "$TMP/AiyodlxApk.apk"
 echo "BUILD OK -> $TMP/AiyodlxApk.apk"
