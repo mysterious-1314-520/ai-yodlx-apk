@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>AI 聚合网关 · 下载</title>
+<meta name="description" content="AI 聚合网关 — 一个端点接入全部模型，网关侧完成破甲。下载 APK，一键安装。">
+<meta name="theme-color" content="#0b1026">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="favicon-64.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<style>
+  :root{
+    --indigo:#6366f1; --violet:#8b5cf6; --deep:#0b1026;
+    --glass:rgba(255,255,255,0.14); --glass-brd:rgba(255,255,255,0.38);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;width:100%;overflow-x:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:#e2e8f0}
+  body{
+    position:fixed;inset:0;
+    background:
+      radial-gradient(1100px 760px at 15% 10%, rgba(99,102,241,0.58), transparent 60%),
+      radial-gradient(960px 680px at 85% 25%, rgba(139,92,246,0.52), transparent 60%),
+      radial-gradient(860px 720px at 50% 115%, rgba(56,189,248,0.44), transparent 55%),
+      linear-gradient(145deg,#0a0e22 0%,#14113a 50%,#0a0e22 100%);
+    background-size:200% 200%;
+    animation:liquidShift 20s ease infinite;
+  }
+  @keyframes liquidShift{0%{background-position:0% 0%}50%{background-position:100% 100%}100%{background-position:0% 0%}}
+
+  .blob{position:fixed;border-radius:50%;filter:blur(70px);opacity:.5;animation:float 26s ease-in-out infinite;pointer-events:none}
+  .blob.b1{width:440px;height:440px;left:-100px;top:-80px;background:radial-gradient(circle,rgba(99,102,241,.9),transparent 70%);animation-delay:0s}
+  .blob.b2{width:380px;height:380px;right:-80px;top:8%;background:radial-gradient(circle,rgba(139,92,246,.85),transparent 70%);animation-delay:-9s}
+  .blob.b3{width:480px;height:480px;left:25%;bottom:-140px;background:radial-gradient(circle,rgba(56,189,248,.8),transparent 70%);animation-delay:-18s}
+  @keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(50px,-35px) scale(1.13)}66%{transform:translate(-35px,30px) scale(.93)}}
+
+  .stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:5;padding:24px}
+
+  .glass{
+    position:relative;width:min(92vw,460px);
+    padding:52px 40px 46px;border-radius:36px;
+    background:var(--glass);backdrop-filter:blur(30px) saturate(170%);
+    -webkit-backdrop-filter:blur(30px) saturate(170%);
+    border:1px solid var(--glass-brd);
+    box-shadow:0 24px 70px rgba(15,23,42,.45), inset 0 1px 0 rgba(255,255,255,.6);
+    text-align:center;overflow:hidden;
+    animation:rise .95s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:none}}
+
+  .glass::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+    background:linear-gradient(165deg,rgba(255,255,255,.8),rgba(255,255,255,0) 40%,rgba(255,255,255,.16));
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+  .glass::after{content:"";position:absolute;top:-150%;left:-35%;width:65%;height:240%;
+    background:linear-gradient(120deg,transparent,rgba(255,255,255,.55),transparent);
+    transform:rotate(25deg);animation:sheen 6s ease-in-out infinite;pointer-events:none}
+  @keyframes sheen{0%,100%{opacity:0;transform:translateX(-25%) rotate(25deg)}50%{opacity:1;transform:translateX(65%) rotate(25deg)}}
+
+  .mark{
+    width:84px;height:84px;margin:0 auto 24px;border-radius:24px;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,rgba(99,102,241,.55),rgba(139,92,246,.45));
+    border:1px solid rgba(255,255,255,.5);
+    box-shadow:0 12px 34px rgba(99,102,241,.45), inset 0 1px 0 rgba(255,255,255,.65);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    animation:pulse 3.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+  .mark svg{width:44px;height:44px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3))}
+
+  h1{font-size:31px;font-weight:700;letter-spacing:1.5px;margin-bottom:9px;text-shadow:0 2px 14px rgba(15,23,42,.4)}
+  .sub{font-size:14.5px;color:rgba(241,245,249,.74);line-height:1.7;margin-bottom:8px}
+  .sub b{color:#e2e8f0;font-weight:600}
+
+  .ver{display:inline-block;font-size:12px;color:rgba(241,245,249,.55);
+    border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:4px 13px;margin-bottom:26px}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    width:100%;max-width:300px;padding:16px 28px;border-radius:999px;cursor:pointer;border:none;
+    font-size:16px;font-weight:700;letter-spacing:1px;color:#14113a;
+    background:linear-gradient(120deg,rgba(255,255,255,.95),rgba(255,255,255,.78));
+    box-shadow:0 10px 30px rgba(99,102,241,.4), inset 0 1px 0 rgba(255,255,255,.95);
+    transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    text-decoration:none}
+  .btn:hover{transform:translateY(-2px);filter:brightness(1.04);box-shadow:0 16px 38px rgba(99,102,241,.5)}
+  .btn:active{transform:translateY(0) scale(.98)}
+  .btn svg{width:18px;height:18px}
+
+  .meta{display:flex;flex-wrap:wrap;gap:7px 16px;justify-content:center;margin-top:22px;font-size:12px;color:rgba(241,245,249,.5)}
+  .meta span{display:inline-flex;align-items:center;gap:5px}
+
+  .features{margin-top:34px;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;text-align:left}
+  .features .f{padding:14px 16px;border-radius:16px;background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .features .f .t{font-size:13px;font-weight:650;margin-bottom:3px}
+  .features .f .d{font-size:11.5px;color:rgba(241,245,249,.6);line-height:1.5}
+
+  .foot{position:fixed;left:0;right:0;bottom:0;text-align:center;font-size:11.5px;color:rgba(241,245,249,.42);z-index:4;padding:14px;letter-spacing:.4px}
+  .foot a{color:rgba(241,245,249,.6);text-decoration:none}
+  .foot a:hover{text-decoration:underline}
+
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+
+  <div class="stage">
+    <div class="glass" id="card">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c7d2fe" stop-opacity=".95"/><stop offset="1" stop-color="#6366f1" stop-opacity=".6"/></linearGradient>
+            <linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a5b4fc" stop-opacity=".85"/><stop offset="1" stop-color="#4f46e5" stop-opacity=".65"/></linearGradient>
+            <linearGradient id="c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c8af0" stop-opacity=".75"/><stop offset="1" stop-color="#4338ca" stop-opacity=".75"/></linearGradient>
+          </defs>
+          <path d="M4 12.5l8 4.5 8-4.5v4l-8 4.5-8-4.5z" fill="url(#c)" stroke="#c7d2fe" stroke-opacity=".7" stroke-width=".9" stroke-linejoin="round"/>
+          <path d="M4 7.5l8 4.5 8-4.5v5l-8 4.5-8-4.5v-5z" fill="url(#b)" stroke="#c7d2fe" stroke-opacity=".7" stroke-width=".9" stroke-linejoin="round"/>
+          <path d="M12 3l8 4.5-8 4.5-8-4.5z" fill="url(#a)" stroke="#c7d2fe" stroke-opacity=".9" stroke-width=".9" stroke-linejoin="round"/>
+          <path d="M12 3L4 7.5" stroke="#fff" stroke-opacity=".65" stroke-width=".8" stroke-linecap="round"/>
+          <path d="M12 3L20 7.5" stroke="#fff" stroke-opacity=".4" stroke-width=".8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1>AI 聚合网关</h1>
+      <p class="sub">一个端点，接入全部模型<br>并在网关侧完成 <b>破甲</b></p>
+      <div class="ver" id="ver">v1.0.0</div>
+      <a class="btn" id="dl" href="./AiyodlxApk.apk" download>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+        下载 APK
+      </a>
+      <div class="meta">
+        <span>📦 Android 8.0+</span>
+        <span>🔐 已签名</span>
+        <span>⚡ 114KB</span>
+      </div>
+
+      <div class="features">
+        <div class="f"><div class="t">多提供商</div><div class="d">Trae / 豆包 / WorkBuddy / Qoder 等 11 平台</div></div>
+        <div class="f"><div class="t">网关侧破甲</div><div class="d">思维注入，不改客户端文件</div></div>
+        <div class="f"><div class="t">OpenAI 兼容</div><div class="d">任意 SDK，改 base_url 即接</div></div>
+        <div class="f"><div class="t">账号池调度</div><div class="d">轮换排队 + 故障自动转移</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">© AI Aggregator · 一个端点接入全部模型</div>
+</body>
+</html>

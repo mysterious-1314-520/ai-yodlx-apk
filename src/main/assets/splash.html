@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>AI 聚合网关</title>
+<style>
+  :root{
+    --glass-bg: rgba(255,255,255,0.16);
+    --glass-brd: rgba(255,255,255,0.42);
+    --glass-shd: 0 18px 50px rgba(31,41,55,0.28);
+    --accent: #6366f1;
+    --accent2: #8b5cf6;
+    --text: #f8fafc;
+    --muted: rgba(241,245,249,0.72);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;width:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--text)}
+  body{
+    position:fixed;inset:0;
+    background:
+      radial-gradient(1200px 800px at 18% 12%, rgba(99,102,241,0.55), transparent 60%),
+      radial-gradient(1000px 700px at 82% 22%, rgba(139,92,246,0.50), transparent 60%),
+      radial-gradient(900px 700px at 50% 110%, rgba(56,189,248,0.42), transparent 55%),
+      linear-gradient(135deg,#0f172a 0%,#1e1b4b 55%,#0f172a 100%);
+    background-size:200% 200%;
+    animation:liquidShift 18s ease infinite;
+  }
+  @keyframes liquidShift{
+    0%{background-position:0% 0%}
+    50%{background-position:100% 100%}
+    100%{background-position:0% 0%}
+  }
+  /* floating blobs for extra liquid depth */
+  .blob{position:fixed;border-radius:50%;filter:blur(60px);opacity:0.55;animation:float 22s ease-in-out infinite}
+  .blob.b1{width:380px;height:380px;left:-80px;top:-60px;background:radial-gradient(circle,rgba(99,102,241,0.9),transparent 70%);animation-delay:0s}
+  .blob.b2{width:340px;height:340px;right:-70px;top:10%;background:radial-gradient(circle,rgba(139,92,246,0.85),transparent 70%);animation-delay:-7s}
+  .blob.b3{width:420px;height:420px;left:30%;bottom:-120px;background:radial-gradient(circle,rgba(56,189,248,0.8),transparent 70%);animation-delay:-14s}
+  @keyframes float{
+    0%,100%{transform:translate(0,0) scale(1)}
+    33%{transform:translate(40px,-30px) scale(1.12)}
+    66%{transform:translate(-30px,25px) scale(0.94)}
+  }
+
+  .stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:5}
+
+  .glass{
+    position:relative;
+    width:min(86vw,420px);
+    padding:54px 38px 44px;
+    border-radius:32px;
+    background:var(--glass-bg);
+    backdrop-filter:blur(26px) saturate(160%);
+    -webkit-backdrop-filter:blur(26px) saturate(160%);
+    border:1px solid var(--glass-brd);
+    box-shadow:var(--glass-shd), inset 0 1px 0 rgba(255,255,255,0.55);
+    overflow:hidden;
+    text-align:center;
+    animation:rise 0.9s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(26px) scale(0.97)}to{opacity:1;transform:none}}
+
+  /* glossy sheen sweep */
+  .glass::before{
+    content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+    background:linear-gradient(160deg,rgba(255,255,255,0.75),rgba(255,255,255,0) 38%,rgba(255,255,255,0.15));
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;
+    pointer-events:none;
+  }
+  .glass::after{
+    content:"";position:absolute;top:-120%;left:-30%;width:70%;height:220%;
+    background:linear-gradient(120deg,transparent,rgba(255,255,255,0.5),transparent);
+    transform:rotate(25deg);animation:sheen 5.5s ease-in-out infinite;pointer-events:none;
+  }
+  @keyframes sheen{0%,100%{opacity:0;transform:translateX(-20%) rotate(25deg)}50%{opacity:1;transform:translateX(60%) rotate(25deg)}}
+
+  .mark{
+    width:86px;height:86px;margin:0 auto 26px;border-radius:26px;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,rgba(99,102,241,0.55),rgba(139,92,246,0.45));
+    border:1px solid rgba(255,255,255,0.5);
+    box-shadow:0 10px 30px rgba(99,102,241,0.45), inset 0 1px 0 rgba(255,255,255,0.6);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    animation:pulse 3.2s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.06);filter:brightness(1.12)}}
+  .mark svg{width:46px;height:46px;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3))}
+
+  h1{font-size:30px;font-weight:700;letter-spacing:1.5px;margin-bottom:8px;text-shadow:0 2px 12px rgba(15,23,42,0.4)}
+  .sub{font-size:14.5px;color:var(--muted);line-height:1.6;margin-bottom:30px}
+  .sub b{color:var(--text);font-weight:600}
+
+  .dots{display:inline-flex;gap:7px;margin-bottom:28px}
+  .dots span{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.85);animation:blink 1.3s ease-in-out infinite}
+  .dots span:nth-child(2){animation-delay:.18s}
+  .dots span:nth-child(3){animation-delay:.36s}
+  @keyframes blink{0%,80%,100%{opacity:.25;transform:scale(.7)}40%{opacity:1;transform:scale(1)}}
+
+  .enter{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:13px 30px;border-radius:999px;cursor:pointer;border:none;
+    font-size:15px;font-weight:600;letter-spacing:1px;color:#1e1b4b;
+    background:linear-gradient(120deg,rgba(255,255,255,0.92),rgba(255,255,255,0.72));
+    box-shadow:0 8px 24px rgba(99,102,241,0.35), inset 0 1px 0 rgba(255,255,255,0.9);
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .enter:active{transform:scale(0.97);box-shadow:0 4px 14px rgba(99,102,241,0.3)}
+  .enter .arr{font-size:18px}
+
+  .foot{position:fixed;left:0;right:0;bottom:22px;text-align:center;font-size:11.5px;color:var(--muted);z-index:4;letter-spacing:.5px}
+  .foot b{color:rgba(241,245,249,0.9)}
+
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+
+  <div class="stage">
+    <div class="glass" id="card">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c7d2fe" stop-opacity=".9"/><stop offset="1" stop-color="#6366f1" stop-opacity=".55"/></linearGradient>
+            <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a5b4fc" stop-opacity=".8"/><stop offset="1" stop-color="#4f46e5" stop-opacity=".6"/></linearGradient>
+            <linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c8af0" stop-opacity=".7"/><stop offset="1" stop-color="#4338ca" stop-opacity=".7"/></linearGradient>
+          </defs>
+          <path d="M4 12.5l8 4.5 8-4.5v4l-8 4.5-8-4.5z" fill="url(#g3)" stroke="#c7d2fe" stroke-opacity=".7" stroke-width=".9" stroke-linejoin="round"/>
+          <path d="M4 7.5l8 4.5 8-4.5v5l-8 4.5-8-4.5v-5z" fill="url(#g2)" stroke="#c7d2fe" stroke-opacity=".7" stroke-width=".9" stroke-linejoin="round"/>
+          <path d="M12 3l8 4.5-8 4.5-8-4.5z" fill="url(#g1)" stroke="#c7d2fe" stroke-opacity=".85" stroke-width=".9" stroke-linejoin="round"/>
+          <path d="M12 3L4 7.5" stroke="#fff" stroke-opacity=".6" stroke-width=".8" stroke-linecap="round"/>
+          <path d="M12 3L20 7.5" stroke="#fff" stroke-opacity=".35" stroke-width=".8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1>AI 聚合网关</h1>
+      <p class="sub">一个端点，接入全部模型<br>并在网关侧完成 <b>破甲</b></p>
+      <div class="dots" id="dots"><span></span><span></span><span></span></div>
+      <button class="enter" id="enterBtn"><span>进入控制台</span><span class="arr">→</span></button>
+    </div>
+  </div>
+
+  <div class="foot">© AI Aggregator · 一个端点接入全部模型</div>
+
+<script>
+  var ENTER_URL = "https://ai.yodlx.com/";
+  var btn = document.getElementById('enterBtn');
+  var card = document.getElementById('card');
+  function go(){
+    card.classList.add('hidden');
+    if(window.android && window.android.goToSite){ window.android.goToSite(ENTER_URL); }
+    else { try{ window.location.replace(ENTER_URL); }catch(e){} }
+  }
+  btn.addEventListener('click', go);
+  // auto-enter after 2.4s
+  setTimeout(go, 2400);
+</script>
+</body>
+</html>

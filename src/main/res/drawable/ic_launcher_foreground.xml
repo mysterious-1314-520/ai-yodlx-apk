@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- glossy glass card backdrop -->
+    <path
+        android:fillColor="#E8ECF5"
+        android:strokeColor="#C7D2EA"
+        android:strokeWidth="2.5"
+        android:pathData="M22 14 L86 14 L86 44 L86 74 L86 94 L54 94 L22 74 Z" />
+    <!-- glossy top sheen -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.5"
+        android:pathData="M24 16 C44 10 64 10 84 16 L84 28 C64 22 44 22 24 28 Z" />
+    <!-- polyhedron body -->
+    <path
+        android:fillColor="#6366F1"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2.2"
+        android:pathData="M54 20 L78 34 L78 60 L54 72 L30 60 L30 34 Z" />
+    <!-- polyhedron inner edges -->
+    <path
+        android:fillColor="#8B5CF6"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2.2"
+        android:pathData="M54 20 L54 72 M30 44 L54 58 L78 44" />
+</vector>
