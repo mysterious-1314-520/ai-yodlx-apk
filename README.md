@@ -20,7 +20,10 @@ https://github.com/mysterious-1314-520/ai-yodlx-apk
 
 ## 官网下载页
 
-https://8000-bf3c06fa506237c6.monkeycode-ai.online
+> ⚠️ **临时预览地址**，依赖后台终端存活，非永久官方站点。
+> 下载页源码在 `download/index.html`，需自行部署到正式托管服务（如 Vercel / Netlify / GitHub Pages）作为永久官网。
+
+预览地址（当前有效）：https://8000-bf3c06fa506237c6.monkeycode-ai.online
 
 ## 项目结构
 
